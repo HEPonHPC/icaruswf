@@ -7,7 +7,7 @@ export MPICH_MAX_THREAD_SAFETY=multiple
 # activate spack environment
 . /scratch/gartung/spack/share/spack/setup-env.sh
 spack load gcc@9.3.0
-spack env activate icaruscode-09_37_01_03_p02-hepnos
+spack env activate  icaruscode-09_37_02_03-hepnos-0_6_4
 
 export ICARUSWF_SRC=/nashome/s/sasyed/packages/icaruswf
 . ${ICARUSWF_SRC}/envvariable.sh
