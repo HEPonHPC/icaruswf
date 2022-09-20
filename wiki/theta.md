@@ -14,7 +14,7 @@
  
 7. Setup spack by `source /projects/HEP_on_HPC/icaruscode/spack/share/spack/setup-env.sh` 
  
-8. activate spack environment: `spack env activate icaruscode-9-37-01-03-p02-vec`
+8. activate spack environment: `spack env activate icaruscode-9-37-02-03-hepnos-0_6_10`
  
 9. set up the environment variables: `source ${ICARUSWF_SRC}/envvariable.sh` 
  
