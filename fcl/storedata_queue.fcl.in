@@ -4,6 +4,8 @@ process_name : DetSim
       hepnos : {
          module_type: LoadbalancingOutput
          fileName: "icarus"
+	 async: "${ENABLE_HEPNOS_ASYNC}"
+	 batch: "${ENABLE_HEPNOS_BATCH}"
       }
   }
 

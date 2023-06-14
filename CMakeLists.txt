@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 # add our cmake module directory to the path
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-     "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 project(icaruswf LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -16,6 +15,24 @@ if(USE_GNI_TRANSPORT)
 else()
   set(MERCURY_TRANSPORT_PROTOCOL "ofi+tcp")
   message(STATUS "Using ofi+tcp as the mercury protocol")
+endif()
+
+option(USE_HEPNOS_ASYNC "use HEPnOS's AsyncEngine" ON)
+if(USE_HEPNOS_ASYNC)
+  set(ENABLE_HEPNOS_ASYNC "true")
+  message(STATUS "Enabled the use of HEPnOS AsyncEngine")
+else()
+  set(ENABLE_HEPNOS_ASYNC "false")
+  message(STATUS "Disabled the use of HEPnOS AsyncEngine")
+endif()
+
+option(USE_HEPNOS_BATCH "use HEPnOS's WriteBatch" ON)
+if(USE_HEPNOS_BATCH)
+  set(ENABLE_HEPNOS_BATCH "true")
+  message(STATUS "Enabled the use of HEPnOS WriteBatch")
+else()
+  set(ENABLE_HEPNOS_BATCH "false")
+  message(STATUS "Disabled the use of HEPnOS WriteBatch")
 endif()
 
 find_package(MPI REQUIRED COMPONENTS C)

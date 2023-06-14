@@ -177,6 +177,8 @@ public:
   struct Config {
     fhicl::TableFragment<OutputModule::Config> omConfig;
     fhicl::Sequence<std::string> dropCommands{fhicl::Name("dropCommands"), {}};
+    fhicl::Atom<bool> async{fhicl::Name("async"), true};
+    fhicl::Atom<bool> batch{fhicl::Name("batch"), true};
   };
 
   using Parameters =
