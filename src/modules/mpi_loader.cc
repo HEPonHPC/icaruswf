@@ -1,9 +1,12 @@
-#include "fmt/format.h"
-#include "mpi.h"
+#include <fmt/format.h>
+#include <mpi.h>
+#include <unistd.h>
 
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -46,6 +49,24 @@ struct skip_info {
   int nskip = 0;
   int nevents = 0;
 };
+
+// return hostname along with printout of rank and total ranks
+// and hardware concurrency for confidence check
+// the printout is only relevant for debugging
+std::string
+get_hostname(int my_rank, int nranks)
+{
+  constexpr size_t LEN = 1024;
+  std::string hostname;
+  hostname.resize(LEN);
+  if (gethostname(hostname.data(), LEN) == 0) {
+    std::cout << "MPI rank " << my_rank << " of total " << nranks
+              << " ranks is running on " << hostname << '\n';
+  } else {
+    std::cout << "could not determine execution resources being used!\n";
+  }
+  return hostname;
+}
 
 // This is to determine how many events to skip and how many to read for a rank
 // out of all the ranks that will read a file given nevents
@@ -134,11 +155,49 @@ load_data(std::string const& fcl_file,
           int nskip,
           int nevents)
 {
-  std::string const cmd = fmt::format(
-    "art -c {} --nskip {} -n {} -s {}", fcl_file, nskip, nevents, input_file);
+  int my_rank;
+  int nranks;
+  if (MPI_Comm_rank(MPI_COMM_WORLD, &my_rank) != MPI_SUCCESS) {
+    std::cerr << "error in MPI_Comm_rank! \n";
+  };
+  if (MPI_Comm_size(MPI_COMM_WORLD, &nranks) != MPI_SUCCESS) {
+    std::cerr << "error in MPI_Comm_size! \n";
+  };
+
+  // create a directory for this MPI rank and cd into it!
+  std::filesystem::create_directory(std::to_string(my_rank));
+  // copy connection file to working directory!
+  const auto copy_options = std::filesystem::copy_options::skip_existing;
+  std::filesystem::copy_file("connection.json",
+                             std::to_string(my_rank).append("/connection.json"),
+                             copy_options);
+  std::filesystem::current_path(std::to_string(my_rank));
+
+  // Confidence check regarding execution resources being used
+  // nranks and my_rank are only used to print out the rank information
+  // they are not needed for getting the hostname
+  auto hostname = get_hostname(my_rank, nranks);
+
+  // Set special flags for running on Theta
+  std::optional<std::string> env_flags;
+  // hostname on theta is just nid0000, so check that we are
+  // not running on csresearch for now.
+  if (hostname.find("csresearch") == std::string::npos) {
+    env_flags.emplace("PMI_NO_PREINITIALIZE=1 PMI_NO_FORK=1 ");
+  }
+
+  // if not on theta, empty string to prepend
+  std::string prepend_flags = env_flags.value_or("");
+
+  std::string const cmd =
+    fmt::format("{} art -c {} --nskip {} -n {} -s {} &> {}_load.txt",
+                prepend_flags,
+                fcl_file,
+                nskip,
+                nevents,
+                input_file,
+                my_rank);
   std::system(cmd.c_str());
-  // int my_rank;
-  //  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
   // std::cout << my_rank << ": " << cmd << std::endl;
 }
 
@@ -154,8 +213,7 @@ main(int argc, char* argv[])
   std::vector<std::string> args(argv + 1, argv + argc);
 
   // initialize MPI after the configuration is all done and checked
-  int rc = MPI_Init(&argc, &argv);
-  if (rc != MPI_SUCCESS) {
+  if (MPI_Init(&argc, &argv) != MPI_SUCCESS) {
     std::cerr << "MPI initialization failed\n";
     return 1;
   }

@@ -309,9 +309,9 @@ main(int argc, char* argv[])
     if (runSP(my_rank, events, nthreads, root_file_path, env_flags) != 0) {
       std::cerr << "error when running signal processing with ROOT!";
     }
-//    if (runHF(my_rank, events, nthreads, env_flags) != 0) {
-//      std::cerr << "error when running hit finding with ROOT!";
-//    }
+    //    if (runHF(my_rank, events, nthreads, env_flags) != 0) {
+    //      std::cerr << "error when running hit finding with ROOT!";
+    //    }
   }
 
   return 0;

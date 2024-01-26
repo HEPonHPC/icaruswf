@@ -15,7 +15,7 @@ module load gcc/9.3.0
 module swap cray-mpich/7.7.14 cray-mpich-abi/7.7.14
 # activate spack environment
 . /projects/HEP_on_HPC/icaruscode/spack/share/spack/setup-env.sh
-spack env activate icaruscode-09_37_02_vecmt04-hepnos-0_7_1
+spack env activate icaruscode-09_37_02_vecmt04-hepnos-0_7_2
 echo "%%% after activating spack envrionment $(date)"
 
 # set relevant env var
@@ -24,7 +24,7 @@ export CET_PLUGIN_PATH=${ICARUSWF_BUILD}/src/modules:${CET_PLUGIN_PATH}
 export FHICL_FILE_PATH=${ICARUSWF_BUILD}/fcl:${FHICL_FILE_PATH}
 
 # for geometry files!
-export FW_SEARCH_PATH=${FW_SEARCH_PATH}:/lus/theta-fs0/projects/HEP_on_HPC/icaruscode/spack/var/spack/environments/icaruscode-09_37_02_vecmt04-hepnos-0_7_1/.spack-env/view/gdml
+export FW_SEARCH_PATH=${FW_SEARCH_PATH}:/lus/theta-fs0/projects/HEP_on_HPC/icaruscode/spack/var/spack/environments/icaruscode-09_37_02_vecmt04-hepnos-0_7_2/.spack-env/view/gdml
 
 export DATA_DIR=/projects/HEP_on_HPC/icarus_data/icaruscode-v09_37_01_03p02/icaruscode-09_37_01_03p02-samples
 export CONFIG_DIR=/projects/HEP_on_HPC/icarus_data/icaruscode-v09_37_01_03p02/icaruscode-09_37_01_03p02-configs
